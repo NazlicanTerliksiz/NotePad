@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "218670274816",
+    "project_id": "notepad-2af1e",
+    "storage_bucket": "notepad-2af1e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:218670274816:android:996e3dbe68946bbe937be5",
+        "android_client_info": {
+          "package_name": "com.nazlican.notepad"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9jKdEZyza26wb_AfelBsQhxG0mkt7l2o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
