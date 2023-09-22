@@ -9,9 +9,10 @@ import com.nazlican.notepad.data.Notes
 import com.nazlican.notepad.databinding.ListItemBinding
 
 class Adapter(
-    private val noteList: ArrayList<Notes>,
+    private val noteList: List<Notes>,
     private val refNotes: DatabaseReference,
-    private val onClick: (Notes) -> Unit
+    private val onClick: (Notes) -> Unit,
+
 ) : RecyclerView.Adapter<Adapter.TodoViewHolder>() {
 
     inner class TodoViewHolder(val binding: ListItemBinding) :
@@ -23,6 +24,7 @@ class Adapter(
                     Snackbar.make(it, "Silmek istiyor musun?", Snackbar.LENGTH_LONG)
                         .setAction("Evet") {
                             refNotes.child(note.note_id!!).removeValue()
+                            notifyDataSetChanged()
                         }.show()
                 }
             }

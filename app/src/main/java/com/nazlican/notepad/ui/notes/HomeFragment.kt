@@ -6,11 +6,9 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.nazlican.notepad.R
 import com.nazlican.notepad.adapter.Adapter
 import com.nazlican.notepad.common.viewBinding
@@ -21,30 +19,26 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private val binding by viewBinding(FragmentHomeBinding::bind)
     private lateinit var adapter: Adapter
-    private lateinit var viewModel: HomeViewModel
     private lateinit var refNotes:DatabaseReference
-    val noteList = arrayListOf<Notes>()
+    private val viewModel:HomeViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val tempViewModel:HomeViewModel by viewModels()
-        viewModel = tempViewModel
 
         val db = FirebaseDatabase.getInstance()
         refNotes = db.getReference("notes")
-        allNotes()
 
+        binding.rv.layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
+        viewModel.uploadNotes(refNotes)
+
+       observe()
 
         binding.imageViewAdd.setOnClickListener {
             val action = HomeFragmentDirections.actionHomeFragmentToAddNoteFragment(null)
             findNavController().navigate(action)
         }
 
-
-        binding.rv.layoutManager = StaggeredGridLayoutManager(1, StaggeredGridLayoutManager.VERTICAL)
-        adapter = Adapter(noteList,refNotes,::navigateToAdd)
-        binding.rv.adapter = adapter
     }
 
     private fun navigateToAdd(notes: Notes){
@@ -52,24 +46,17 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         findNavController().navigate(action)
     }
 
-    private fun allNotes(){
-        refNotes.addValueEventListener(object : ValueEventListener{
-            override fun onDataChange(snapshot: DataSnapshot) {
-
-                noteList.clear()
-
-                for(c in snapshot.children){
-                    val note = c.getValue(Notes::class.java)
-
-                    if(note != null){
-                        note.note_id = c.key.toString()
-                        noteList.add(note)
-                    }
-                }
+    private fun observe(){
+        viewModel.noteListRepo.observe(viewLifecycleOwner){
+            if (it != null){
+                adapter = Adapter(it,refNotes,::navigateToAdd)
+                binding.rv.adapter = adapter
                 adapter.notifyDataSetChanged()
+            }else{
+                Snackbar.make(requireView(), "liste boş", Snackbar.LENGTH_LONG).show()
             }
-            override fun onCancelled(error: DatabaseError) {
-            }
-        })
+        }
     }
+
+
 }

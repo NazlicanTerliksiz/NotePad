@@ -1,11 +1,9 @@
 package com.nazlican.notepad.ui.addNote
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.firebase.database.DatabaseReference
@@ -39,37 +37,28 @@ class AddNoteFragment : Fragment(R.layout.fragment_add_note) {
 
             binding.buttonAdd.setOnClickListener {
 
+                val detail = binding.editTextText.text.toString().trim()
+
                 findNavController().popBackStack()
-                saveNote()
+                viewModel.uploadNewNotes(refNotes,detail)
 
             }
 
         }else{
+
             binding.buttonUpdate.visibility = View.VISIBLE
             binding.buttonAdd.visibility = View.INVISIBLE
 
             binding.editTextText.setText(note.note)
             binding.buttonUpdate.setOnClickListener{
 
+                val detail = binding.editTextText.text.toString().trim()
+
                 findNavController().popBackStack()
-                updateNote(note)
+                viewModel.uploadUpdatedNotes(note,refNotes,detail)
 
             }
         }
     }
-    private fun saveNote() {
-        val detail = binding.editTextText.text.toString().trim()
-        val referance = refNotes.push()
-        val note = Notes(referance.key, detail)
-        referance.setValue(note)
-        Log.d("message", note.note_id.toString())
-        Log.d("message", note.note.toString())
-    }
 
-    private fun updateNote(note:Notes) {
-        val detail = binding.editTextText.text.toString().trim()
-        val noteHashMap = HashMap<String, Any>()
-        noteHashMap.put("note", detail)
-        note.note_id?.let { refNotes.child(it).updateChildren(noteHashMap) }
-    }
 }
